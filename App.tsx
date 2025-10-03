@@ -1,14 +1,20 @@
-import React from 'react';
+import { useStatusBar } from '@src/hooks';
+import {RootStacksProp} from '@src/navigation';
+import React, {useEffect} from 'react';
 import type {PropsWithChildren} from 'react';
 import {
+  Alert,
   Image,
+  Platform,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
+  TouchableOpacity,
   useColorScheme,
   View,
 } from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import {
   Colors,
@@ -48,28 +54,37 @@ function Section({children, title}: SectionProps): React.JSX.Element {
   );
 }
 
-function App(): React.JSX.Element {
+interface MyProps {
+  navigation?: RootStacksProp;
+}
+
+const App: React.FC<MyProps> = props => {
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
   const safePadding = '5%';
+  const statusBar = useSafeAreaInsets().top;
+
+  Alert.alert('StatusBar: ', useStatusBar().height + '')
 
   return (
     <View style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
       <ScrollView style={backgroundStyle}>
         <View style={{paddingRight: safePadding}}>
           <Header />
         </View>
-        <Image
-          source={require('@src/assets/images/android.png')}
-          style={{height: 32, width: 32}}
-        />
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => {
+            props.navigation.navigate('HelloWorld', {id: 'HelloWorld.'});
+          }}>
+          <Image
+            source={require('@src/assets/images/android.png')}
+            style={{height: 32, width: 32}}
+          />
+        </TouchableOpacity>
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
@@ -94,7 +109,7 @@ function App(): React.JSX.Element {
       </ScrollView>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   sectionContainer: {
